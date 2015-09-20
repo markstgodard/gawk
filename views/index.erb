@@ -1,47 +1,119 @@
+<style>
+.tooltip {
+    position: absolute;
+    background: #de8;
+    border-radius: 20px;
+    padding: 5px 15px;
+    box-shadow: 1px 1px 3px;
+    text-align: left;
+}
+
+.tooltip h3 {
+    font-size: 16px;
+}
+
+.tooltip h5 {
+    font-size: 14px;
+}
+.tooltip .error, .tooltip .failure {
+    border-left: 3px solid red;
+    padding-left: 10px;
+    margin-left: 10px;
+}
+
+.tooltip .failure {
+    border-color: orange;
+}
+</style>
 
 <script>
 
-  function update(testresults) {
+  d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
 
-      // column definitions
-      var columns = [
-          { head: 'Name', cl: 'title', html: ƒ('name') },
-          { head: 'Time', cl: 'center', html: ƒ('time') },
-          { head: 'Package', cl: 'center', html: ƒ('package') },
-          { head: 'Result', cl: 'center', html: ƒ('result') },
-      ];
+  var onMouseOver = function(data) {
+        // Update tooltip content
+    var content  = "<h5>" + data.name+ "</h5>";
 
-      // create table
-      var table = d3.select('body')
-          .append('table');
+        d3.select(".tooltip").html(content);
 
-      // create table header
-      table.append('thead').append('tr')
-          .selectAll('th')
-          .data(columns).enter()
-          .append('th')
-          .attr('class', ƒ('cl'))
-          .text(ƒ('head'));
+        if (data.result != "pass") {
+            content += "<div class='error'>";
+            content += "    <h5>" + "Error:"+ "</h5>";
+            content += "    <pre>" + "Specific failure msg" + "</pre>";
+            content += "</div>";
+        }
 
-      // create table body
-      table.append('tbody')
-          .selectAll('tr')
-          .data(testresults).enter()
-          .append('tr')
-          .selectAll('td')
-          .data(function(row, i) {
-              return columns.map(function(c) {
-                  // compute cell values for this specific row
-                  var cell = {};
-                  d3.keys(c).forEach(function(k) {
-                      cell[k] = typeof c[k] == 'function' ? c[k](row,i) : c[k];
-                  });
-                  return cell;
-              });
-          }).enter()
-          .append('td')
-          .html(ƒ('html'))
-          .attr('class', ƒ('cl'));
+    // Display tooltip
+    d3.select(".tooltip")
+      .transition()
+        .duration(200)
+        .style("opacity", 1);
+  }
+
+  var onMouseMove = function() {
+    d3.select(".tooltip")
+      .style("left", (d3.event.pageX + 5) + "px")
+      .style("top",  (d3.event.pageY + 5) + "px");
+  }
+
+  var onMouseOut = function() {
+    d3.select(".tooltip").style("opacity", 0);
+  }
+
+  function update(data) {
+      var boxHeight = 50;
+      var boxWidth = 50;
+      var spacer = 2;
+
+      var numPerRow = 20;
+
+      d3.select("svg")
+             .remove();
+
+            var svg = d3.select('body')
+                .append('svg')
+                .attr('width', ((boxWidth+spacer) * numPerRow))
+                .attr('height', 1000)
+                .append("g")
+
+
+      var idx = 0;
+      var y = 0;
+
+      // red : bd2c00
+      // green: 8cc665
+
+      var boxes = svg.selectAll("rect")
+                           .data(data)
+                           .enter()
+                              .append("g")
+                              .append("rect")
+                              .attr("height", boxHeight)
+                              .attr("width", boxWidth)
+                              <%# .attr("style", "outline: thin solid lightgreen;") %>
+                              .attr("fill", function(d){
+                                  if(d.result == "pass"){
+                                    return "#8cc665"
+                                  }else{
+                                    return "#bd2c00"
+                                  }
+                              })
+
+                              .attr("transform",
+                                    function(d){
+                                      if(idx % numPerRow == 0){
+                                        y += boxHeight + spacer;
+                                      }
+                                      return "translate(" + (boxWidth + spacer) * (idx += 1) + ", 0)";
+                                    })
+                              .on("mouseover", onMouseOver)
+                              .on("mousemove", onMouseMove)
+                              .on("mouseout", onMouseOut);
+
+
   }
 
   var url = 'http://localhost:9292/tests';
@@ -56,3 +128,6 @@
   }, 5000);
 
 </script>
+
+
+
