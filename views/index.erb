@@ -1,1 +1,58 @@
-<h1>Index</h1>
+
+<script>
+
+  function update(testresults) {
+
+      // column definitions
+      var columns = [
+          { head: 'Name', cl: 'title', html: ƒ('name') },
+          { head: 'Time', cl: 'center', html: ƒ('time') },
+          { head: 'Package', cl: 'center', html: ƒ('package') },
+          { head: 'Result', cl: 'center', html: ƒ('result') },
+      ];
+
+      // create table
+      var table = d3.select('body')
+          .append('table');
+
+      // create table header
+      table.append('thead').append('tr')
+          .selectAll('th')
+          .data(columns).enter()
+          .append('th')
+          .attr('class', ƒ('cl'))
+          .text(ƒ('head'));
+
+      // create table body
+      table.append('tbody')
+          .selectAll('tr')
+          .data(testresults).enter()
+          .append('tr')
+          .selectAll('td')
+          .data(function(row, i) {
+              return columns.map(function(c) {
+                  // compute cell values for this specific row
+                  var cell = {};
+                  d3.keys(c).forEach(function(k) {
+                      cell[k] = typeof c[k] == 'function' ? c[k](row,i) : c[k];
+                  });
+                  return cell;
+              });
+          }).enter()
+          .append('td')
+          .html(ƒ('html'))
+          .attr('class', ƒ('cl'));
+  }
+
+  var url = 'http://localhost:9292/tests';
+
+  setInterval(function() {
+
+    d3.json(url, function(json){
+        console.log("received: " + json);
+        update(json);
+      });
+
+  }, 5000);
+
+</script>
