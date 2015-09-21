@@ -1,7 +1,7 @@
 <style>
 .tooltip {
     position: absolute;
-    background: #de8;
+    background: #eaece0;
     border-radius: 20px;
     padding: 5px 15px;
     box-shadow: 1px 1px 3px;
@@ -91,9 +91,8 @@
                            .enter()
                               .append("g")
                               .append("rect")
-                              .attr("height", boxHeight)
+                              .attr("height", 0)
                               .attr("width", boxWidth)
-                              <%# .attr("style", "outline: thin solid lightgreen;") %>
                               .attr("fill", function(d){
                                   if(d.result == "pass"){
                                     return "#8cc665"
@@ -101,31 +100,32 @@
                                     return "#bd2c00"
                                   }
                               })
-
                               .attr("transform",
                                     function(d){
                                       if(idx % numPerRow == 0){
                                         y += boxHeight + spacer;
+                                        idx = 0;
                                       }
-                                      return "translate(" + (boxWidth + spacer) * (idx += 1) + ", 0)";
+                                      return "translate(" + (boxWidth + spacer) * (idx += 1) + ", "+ y + ")";
                                     })
                               .on("mouseover", onMouseOver)
                               .on("mousemove", onMouseMove)
                               .on("mouseout", onMouseOut);
 
+    boxes.transition().duration(1000).attr('height', boxHeight);
 
   }
 
   var url = 'http://localhost:9292/tests';
 
-  setInterval(function() {
+  <%# setInterval(function() { %>
 
     d3.json(url, function(json){
         console.log("received: " + json);
         update(json);
       });
 
-  }, 5000);
+  <%# }, 5000); %>
 
 </script>
 
