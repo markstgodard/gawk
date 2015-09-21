@@ -1,7 +1,7 @@
 <style>
 .tooltip {
     position: absolute;
-    background: #eaece0;
+    background: #fff;
     border-radius: 20px;
     padding: 5px 15px;
     box-shadow: 1px 1px 3px;
@@ -34,10 +34,11 @@
       .style("opacity", 0);
 
   var onMouseOver = function(data) {
-        // Update tooltip content
-    var content  = "<h5>" + data.name+ "</h5>";
+      // Update tooltip content
+      var content  = "<h5>" + data.name+ "</h5>";
+      content += "<p><strong>Time:</strong> " + convertDuration(data.time * 1000);
 
-        d3.select(".tooltip").html(content);
+      d3.select(".tooltip").html(content);
 
         if (data.result != "pass") {
             content += "<div class='error'>";
@@ -46,11 +47,11 @@
             content += "</div>";
         }
 
-    // Display tooltip
-    d3.select(".tooltip")
-      .transition()
-        .duration(200)
-        .style("opacity", 1);
+      // Display tooltip
+      d3.select(".tooltip")
+        .transition()
+          .duration(200)
+          .style("opacity", 1);
   }
 
   var onMouseMove = function() {
@@ -82,6 +83,8 @@
 
       var idx = 0;
       var y = 0;
+      var green = "#8cc665";
+      var red = "#bd2c00";
 
       // red : bd2c00
       // green: 8cc665
@@ -95,9 +98,9 @@
                               .attr("width", boxWidth)
                               .attr("fill", function(d){
                                   if(d.result == "pass"){
-                                    return "#8cc665"
+                                    return green;
                                   }else{
-                                    return "#bd2c00"
+                                    return red;
                                   }
                               })
                               .attr("transform",
@@ -114,7 +117,20 @@
 
     boxes.transition().duration(1000).attr('height', boxHeight);
 
-  }
+    }
+    function convertDuration(milliseconds) {
+        if (milliseconds < 1000) {
+            return Math.round(milliseconds) + "ms";
+        }
+
+        var duration = moment.duration(milliseconds);
+        var seconds = duration.get("seconds");
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+
+        return duration.get("minutes") + ":" + seconds;
+    }
 
   var url = 'http://localhost:9292/tests';
 

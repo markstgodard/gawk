@@ -1,76 +1,27 @@
+require "nokogiri"
+
 class ResultsFetcher
-  class TestCase < Struct.new(:name, :time, :category, :result)
+
+  def self.parse_testcases(testcases)
+    results = []
+    testcases.each do |t|
+      puts "test case: #{t} #{t.class}"
+      results << { name: t.attribute("name"), time: t.attribute("time"), package: t.attribute("classname"), result: "pass" }
+    end
+    results
   end
 
   def self.fetch
+    dir = "./logs"
     results = []
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route", time: "18.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 2", time: "12.65275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 3", time: "8.650551275", package: "Applications", result: "pass" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 4", time: "275", package: "Applications", result: "failed" }
-    results << { name: "Buildpacks binary makes the app reachable via its bound route 5", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new test", time: "1275", package: "Applications", result: "pass" }
-    results << { name: "Some new failing test", time: "1275", package: "Applications", result: "failed" }
+
+    files_oldest_first = Dir[dir + "/*.xml"].sort_by{ |f| File.mtime(f) }
+
+    files_oldest_first.each do |f|
+      xml = Nokogiri::XML(File.read(f))
+      testcases = xml.xpath("//testcase")
+      results.concat(parse_testcases(testcases))
+    end
     results
   end
 
