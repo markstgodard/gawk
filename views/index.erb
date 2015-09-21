@@ -38,14 +38,14 @@
       var content  = "<h5>" + data.name+ "</h5>";
       content += "<p><strong>Time:</strong> " + convertDuration(data.time * 1000);
 
-      d3.select(".tooltip").html(content);
+      if (data.result != "pass") {
+          content += "<div class='error'>";
+          content += "    <h5>" + "Error: "+ data.message + "</h5>";
+          content += "    <pre>" + data.details + "</pre>";
+          content += "</div>";
+      }
 
-        if (data.result != "pass") {
-            content += "<div class='error'>";
-            content += "    <h5>" + "Error:"+ "</h5>";
-            content += "    <pre>" + "Specific failure msg" + "</pre>";
-            content += "</div>";
-        }
+      d3.select(".tooltip").html(content);
 
       // Display tooltip
       d3.select(".tooltip")
@@ -118,6 +118,7 @@
     boxes.transition().duration(1000).attr('height', boxHeight);
 
     }
+
     function convertDuration(milliseconds) {
         if (milliseconds < 1000) {
             return Math.round(milliseconds) + "ms";
@@ -132,16 +133,28 @@
         return duration.get("minutes") + ":" + seconds;
     }
 
+    function draw(callback){
+        d3.json(url, function(json){
+            update(json);
+            callback();
+        });
+    };
+
+
   var url = 'http://localhost:9292/tests';
 
-  <%# setInterval(function() { %>
-
-    d3.json(url, function(json){
-        console.log("received: " + json);
-        update(json);
+  function drawContinuously(){
+      draw(function(){
+        setTimeout(function(){
+          drawContinuously();
+        }, 4000);
       });
+  };
 
-  <%# }, 5000); %>
+$(document).ready(function() {
+  drawContinuously();
+})
+
 
 </script>
 
