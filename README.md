@@ -1,7 +1,7 @@
 # Gawk ๏_๏
 
 ## About
-Simple app to see wtf is going on with running cf-acceptance-tests
+Simple app that watches test progress
 
 ## Install
 
