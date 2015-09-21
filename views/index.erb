@@ -24,9 +24,28 @@
 .tooltip .failure {
     border-color: orange;
 }
+
+.header {
+  font-family: Gill Sans, Verdana;
+  font-size: 18px;
+  line-height: 18px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+   position: absolute;
+    left: 60px;
+}
+
+
 </style>
 
 <script>
+
+d3.select("body")
+      .append("div")
+      .attr("class", "header")
+      .html("Test Results");
+
 
   d3.select("body")
       .append("div")
