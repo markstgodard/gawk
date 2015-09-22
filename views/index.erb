@@ -44,13 +44,26 @@
   letter-spacing: 2px;
   font-weight: bold;
    position: absolute;
-   right: 230px;
+   right: 350px;
+   top: 12px;
+}
+.testtime {
+  font-family: Verdana;
+  font-size: 12px;
+  line-height: 18px;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+   position: absolute;
+   right: 170px;
+   top: 12px;
 }
 
 
 </style>
 
 <div id="testheader" class="testresults"></div>
+<div id="testtime" class="testtime"></div>
 
 <script>
 
@@ -104,6 +117,8 @@
 
       d3.select("#testheader")
           .html(summary(data));
+      d3.select("#testtime")
+          .html(summaryTime(data));
 
             var svg = d3.select('body')
                 .append('svg')
@@ -151,11 +166,14 @@
     }
 
     function summary(data){
-        var content = "Passed: " + data.total_passed + " Failed: " + data.total_failed + " Total Time: " + convertDuration(data.total_time);
-        return content;
+        return "Passed: " + data.total_passed + " Failed: " + data.total_failed;
+    }
+    function summaryTime(data){
+        return "Total Time: " + convertDuration((data.total_time * 1000));
     }
 
     function convertDuration(milliseconds) {
+
         if (milliseconds < 1000) {
             return Math.round(milliseconds) + "ms";
         }
