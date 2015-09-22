@@ -25,8 +25,7 @@ class ResultsFetcher
   end
 
 
-  def self.fetch
-    dir = "./logs"
+  def self.fetch(dir)
     results = []
 
     files_oldest_first = Dir[dir + "/*.xml"].sort_by{ |f| File.mtime(f) }
