@@ -50,6 +50,8 @@
 
 </style>
 
+<div id="testheader" class="testresults"></div>
+
 <script>
 
 
@@ -100,9 +102,7 @@
       d3.select("svg")
           .remove();
 
-      d3.select("body")
-          .append("div")
-          .attr("class", "testresults")
+      d3.select("#testheader")
           .html(summary(data));
 
             var svg = d3.select('body')
