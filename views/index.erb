@@ -113,7 +113,7 @@ d3.select("body")
                            .enter()
                               .append("g")
                               .append("rect")
-                              .attr("height", 0)
+                              .attr("height", boxHeight)
                               .attr("width", boxWidth)
                               .attr("fill", function(d){
                                   if(d.result == "pass"){
@@ -134,7 +134,7 @@ d3.select("body")
                               .on("mousemove", onMouseMove)
                               .on("mouseout", onMouseOut);
 
-    boxes.transition().duration(1000).attr('height', boxHeight);
+    <%# boxes.transition().duration(1000).attr('height', boxHeight); %>
 
     }
 
