@@ -1,41 +1,49 @@
 require "nokogiri"
 
-class ResultsFetcher
+module Gawk
+  class ResultsFetcher
 
-  def self.failed?(test, result)
-    if test.children.size > 0
-      failed = test.children.at("//failure")
-      result[:message] = failed.attribute("message").value
-      result[:details] = failed.text
+    def self.failed?(test, result)
+      if test.children.size > 0
+        failed = test.children.at("//failure")
+        result[:message] = failed.attribute("message").value
+        result[:details] = failed.text
+      end
     end
-  end
 
-  def self.parse_testcases(testcases)
-    results = []
-    testcases.each do |t|
-      result = "pass"
+    def self.parse_testcases(summary, testcases)
+      testcases.each do |t|
+        result = "pass"
 
-      testcase = { name: t.attribute("name").value, time: t.attribute("time").value, package: t.attribute("classname").value }
+        testcase = { name: t.attribute("name").value, time: t.attribute("time").value, package: t.attribute("classname").value }
 
-      result = "failed" if failed?(t, testcase)
-      testcase[:result] = result
-      results << testcase
+        if failed?(t, testcase)
+          result = "failed"
+          summary[:total_failed] += 1
+        else
+          summary[:total_passed] += 1
+        end
+
+        testcase[:result] = result
+
+        summary[:total_time] += testcase[:time].to_f
+        summary[:results] << testcase
+      end
     end
-    results
-  end
 
+    def self.fetch(dir)
+      summary = { total_time: 0.00, total_passed: 0, total_failed: 0, results: [] }
 
-  def self.fetch(dir)
-    results = []
+      files_oldest_first = Dir[dir + "/*.xml"].sort_by{ |f| File.mtime(f) }
 
-    files_oldest_first = Dir[dir + "/*.xml"].sort_by{ |f| File.mtime(f) }
+      files_oldest_first.each do |f|
+        xml = Nokogiri::XML(File.read(f))
+        testcases = xml.xpath("//testcase")
+        parse_testcases(summary, testcases)
+      end
 
-    files_oldest_first.each do |f|
-      xml = Nokogiri::XML(File.read(f))
-      testcases = xml.xpath("//testcase")
-      results.concat(parse_testcases(testcases))
+      summary
     end
-    results
-  end
 
+  end
 end

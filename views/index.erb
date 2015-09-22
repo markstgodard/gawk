@@ -26,7 +26,7 @@
 }
 
 .header {
-  font-family: Gill Sans, Verdana;
+  font-family: Verdana;
   font-size: 18px;
   line-height: 18px;
   text-transform: uppercase;
@@ -36,15 +36,22 @@
     left: 60px;
 }
 
+.testresults {
+  font-family: Verdana;
+  font-size: 12px;
+  line-height: 18px;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+   position: absolute;
+   right: 230px;
+}
+
 
 </style>
 
 <script>
 
-d3.select("body")
-      .append("div")
-      .attr("class", "header")
-      .html("Test Results");
 
 
   d3.select("body")
@@ -91,7 +98,12 @@ d3.select("body")
       var numPerRow = 20;
 
       d3.select("svg")
-             .remove();
+          .remove();
+
+      d3.select("body")
+          .append("div")
+          .attr("class", "testresults")
+          .html(summary(data));
 
             var svg = d3.select('body')
                 .append('svg')
@@ -109,7 +121,7 @@ d3.select("body")
       // green: 8cc665
 
       var boxes = svg.selectAll("rect")
-                           .data(data)
+                           .data(data.results)
                            .enter()
                               .append("g")
                               .append("rect")
@@ -138,17 +150,20 @@ d3.select("body")
 
     }
 
+    function summary(data){
+        var content = "Passed: " + data.total_passed + " Failed: " + data.total_failed + " Total Time: " + convertDuration(data.total_time);
+        return content;
+    }
+
     function convertDuration(milliseconds) {
         if (milliseconds < 1000) {
             return Math.round(milliseconds) + "ms";
         }
-
         var duration = moment.duration(milliseconds);
         var seconds = duration.get("seconds");
         if (seconds < 10) {
             seconds = "0" + seconds;
         }
-
         return duration.get("minutes") + ":" + seconds;
     }
 
@@ -171,7 +186,12 @@ d3.select("body")
   };
 
 $(document).ready(function() {
-  drawContinuously();
+    d3.select("body")
+        .append("div")
+        .attr("class", "header")
+        .html("Test Results ๏_๏");
+
+    drawContinuously();
 })
 
 
