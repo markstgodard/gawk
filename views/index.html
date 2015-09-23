@@ -1,0 +1,219 @@
+<style>
+.tooltip {
+    position: absolute;
+    background: #fff;
+    border-radius: 20px;
+    padding: 5px 15px;
+    box-shadow: 1px 1px 3px;
+    text-align: left;
+}
+
+.tooltip h3 {
+    font-size: 16px;
+}
+
+.tooltip h5 {
+    font-size: 14px;
+}
+.tooltip .error, .tooltip .failure {
+    border-left: 3px solid red;
+    padding-left: 10px;
+    margin-left: 10px;
+}
+
+.tooltip .failure {
+    border-color: orange;
+}
+
+.header {
+  font-family: Verdana;
+  font-size: 18px;
+  line-height: 18px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+   position: absolute;
+    left: 60px;
+}
+
+.testresults {
+  font-family: Verdana;
+  font-size: 12px;
+  line-height: 18px;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+   position: absolute;
+   right: 350px;
+   top: 12px;
+}
+.testtime {
+  font-family: Verdana;
+  font-size: 12px;
+  line-height: 18px;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  font-weight: bold;
+   position: absolute;
+   right: 170px;
+   top: 12px;
+}
+
+
+</style>
+
+<div id="testheader" class="testresults"></div>
+<div id="testtime" class="testtime"></div>
+
+<script>
+
+
+
+  d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+  var onMouseOver = function(data) {
+      // Update tooltip content
+      var content  = "<h5>" + data.name+ "</h5>";
+      content += "<p><strong>Time:</strong> " + convertDuration(data.time * 1000);
+
+      if (data.result != "pass") {
+          content += "<div class='error'>";
+          content += "    <h5>" + "Error: "+ data.message + "</h5>";
+          content += "    <pre>" + data.details + "</pre>";
+          content += "</div>";
+      }
+
+      d3.select(".tooltip").html(content);
+
+      // Display tooltip
+      d3.select(".tooltip")
+        .transition()
+          .duration(200)
+          .style("opacity", 1);
+  }
+
+  var onMouseMove = function() {
+    d3.select(".tooltip")
+      .style("left", (d3.event.pageX + 5) + "px")
+      .style("top",  (d3.event.pageY + 5) + "px");
+  }
+
+  var onMouseOut = function() {
+    d3.select(".tooltip").style("opacity", 0);
+  }
+
+  function update(data) {
+      var boxHeight = 50;
+      var boxWidth = 50;
+      var spacer = 2;
+
+      var numPerRow = 20;
+
+      d3.select("svg")
+          .remove();
+
+      d3.select("#testheader")
+          .html(summary(data));
+      d3.select("#testtime")
+          .html(summaryTime(data));
+
+            var svg = d3.select('body')
+                .append('svg')
+                .attr('width', ((boxWidth+spacer) * numPerRow))
+                .attr('height', 1000)
+                .append("g")
+
+
+      var idx = 0;
+      var y = 0;
+      var green = "#8cc665";
+      var red = "#bd2c00";
+
+      // red : bd2c00
+      // green: 8cc665
+
+      var boxes = svg.selectAll("rect")
+                           .data(data.results)
+                           .enter()
+                              .append("g")
+                              .append("rect")
+                              .attr("height", boxHeight)
+                              .attr("width", boxWidth)
+                              .attr("fill", function(d){
+                                  if(d.result == "pass"){
+                                    return green;
+                                  }else{
+                                    return red;
+                                  }
+                              })
+                              .attr("transform",
+                                    function(d){
+                                      if(idx % numPerRow == 0){
+                                        y += boxHeight + spacer;
+                                        idx = 0;
+                                      }
+                                      return "translate(" + (boxWidth + spacer) * (idx += 1) + ", "+ y + ")";
+                                    })
+                              .on("mouseover", onMouseOver)
+                              .on("mousemove", onMouseMove)
+                              .on("mouseout", onMouseOut);
+
+    <%# boxes.transition().duration(1000).attr('height', boxHeight); %>
+
+    }
+
+    function summary(data){
+        return "Passed: " + data.total_passed + " Failed: " + data.total_failed;
+    }
+    function summaryTime(data){
+        return "Total Time: " + convertDuration((data.total_time * 1000));
+    }
+
+    function convertDuration(milliseconds) {
+
+        if (milliseconds < 1000) {
+            return Math.round(milliseconds) + "ms";
+        }
+        var duration = moment.duration(milliseconds);
+        var seconds = duration.get("seconds");
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        return duration.get("minutes") + ":" + seconds;
+    }
+
+    function draw(callback){
+        d3.json(url, function(json){
+            update(json);
+            callback();
+        });
+    };
+
+
+  var url = 'http://localhost:9292/tests';
+
+  function drawContinuously(){
+      draw(function(){
+        setTimeout(function(){
+          drawContinuously();
+        }, 4000);
+      });
+  };
+
+$(document).ready(function() {
+    d3.select("body")
+        .append("div")
+        .attr("class", "header")
+        .html("Test Results ๏_๏");
+
+    drawContinuously();
+})
+
+
+</script>
+
+
+
