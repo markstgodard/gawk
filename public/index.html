@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gawker</title>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://rawgit.com/gka/d3-jetpack/master/d3-jetpack.js"></script>
+    <script src="http://momentjs.com/downloads/moment.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+
 <style>
 .tooltip {
     position: absolute;
@@ -81,8 +93,8 @@
 
       if (data.result != "pass") {
           content += "<div class='error'>";
-          content += "    <h5>" + "Error: "+ data.message + "</h5>";
-          content += "    <pre>" + data.details + "</pre>";
+          content += "    <h5>" + "Error: "+ data.Failure + "</h5>";
+          content += "    <pre>" + data.Failure + "</pre>";
           content += "</div>";
       }
 
@@ -161,7 +173,6 @@
                               .on("mousemove", onMouseMove)
                               .on("mouseout", onMouseOut);
 
-    <%# boxes.transition().duration(1000).attr('height', boxHeight); %>
 
     }
 
@@ -187,13 +198,14 @@
 
     function draw(callback){
         d3.json(url, function(json){
+        console.log(json);
             update(json);
             callback();
         });
     };
 
 
-  var url = 'http://localhost:9292/tests';
+  var url = 'tests';
 
   function drawContinuously(){
       draw(function(){
@@ -216,4 +228,6 @@ $(document).ready(function() {
 </script>
 
 
+</body>
+</html>
 
