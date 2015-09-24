@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/markstgodard/gawker.svg?branch=master)](https://travis-ci.org/markstgodard/gawker)
 # Gawker ๏_๏
 
 ## About
