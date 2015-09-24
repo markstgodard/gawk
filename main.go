@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -16,7 +17,6 @@ import (
 )
 
 const viewsDir = "public"
-const reportDir = "./logs"
 
 type TestCases []TestCase
 
@@ -47,13 +47,13 @@ func (f byModTime) Len() int           { return len(f) }
 func (f byModTime) Less(i, j int) bool { return f[i].ModTime().Unix() < f[j].ModTime().Unix() }
 func (f byModTime) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
 
-func collectResults() testSummary {
+func collectResults(reportsDir string) testSummary {
 	t := testSummary{}
 
-	files, _ := ioutil.ReadDir(reportDir)
+	files, _ := ioutil.ReadDir(reportsDir)
 	sort.Sort(byModTime(files))
 	for _, f := range files {
-		xmlFile, err := ioutil.ReadFile(reportDir + "/" + f.Name())
+		xmlFile, err := ioutil.ReadFile(reportsDir + "/" + f.Name())
 		if err != nil {
 			fmt.Println("Error opening file:", err)
 			break
@@ -81,13 +81,23 @@ func collectResults() testSummary {
 	return t
 }
 
-func newTestsHandler() http.Handler {
+func newTestsHandler(reportsDir string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(collectResults())
+		json.NewEncoder(w).Encode(collectResults(reportsDir))
 	})
 }
 
 func main() {
+	flag.Parse()
+
+	args := flag.Args()
+	if len(args) < 1 {
+		fmt.Fprintf(os.Stderr, "usage: gawker [reports dir]\n")
+		os.Exit(1)
+	}
+
+	reportsDir := args[0]
+	log.Printf("Watching reports dir [%s]\n", reportsDir)
 
 	routes := rata.Routes{
 		{Name: "get_index", Method: "GET", Path: "/"},
@@ -96,7 +106,7 @@ func main() {
 
 	handlers := map[string]http.Handler{
 		"get_index": http.FileServer(http.Dir(viewsDir)),
-		"get_tests": newTestsHandler(),
+		"get_tests": newTestsHandler(reportsDir),
 	}
 
 	router, err := rata.NewRouter(routes, handlers)
