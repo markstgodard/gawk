@@ -10,6 +10,6 @@ Simple app that watches running tests progress
 
 ## Usage
 
-    gawker <dir where junit reports are>
+    gawker /path/to/junit-reports
 
 Then visit http://hostname:8080/
