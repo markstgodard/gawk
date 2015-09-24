@@ -93,8 +93,8 @@
 
       if (data.result != "pass") {
           content += "<div class='error'>";
-          content += "    <h5>" + "Error: "+ data.Failure + "</h5>";
-          content += "    <pre>" + data.Failure + "</pre>";
+          content += "    <h5>" + "Error: "+ data.failure.message + "</h5>";
+          content += "    <pre>" + data.failure.details + "</pre>";
           content += "</div>";
       }
 

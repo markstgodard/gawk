@@ -20,16 +20,12 @@ func newTestsHandler(c *Collector) http.Handler {
 	})
 }
 
-func main() {
-	flag.Parse()
+func newServer(args []string) (*http.Server, error) {
 
-	args := flag.Args()
-	if len(args) < 1 {
-		fmt.Fprintf(os.Stderr, "usage: gawker [reports dir]\n")
-		os.Exit(1)
+	c, err := NewCollector(args[0])
+	if err != nil {
+		fmt.Errorf("Error creating test collector: %s\n", err)
 	}
-
-	c := NewCollector(args[0])
 	log.Printf("Watching reports dir [%s]\n", c.ReportsDir)
 
 	routes := rata.Routes{
@@ -44,7 +40,7 @@ func main() {
 
 	router, err := rata.NewRouter(routes, handlers)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	server := &http.Server{
@@ -54,6 +50,22 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+	return server, nil
+}
 
-	log.Fatal(server.ListenAndServe())
+func main() {
+	flag.Parse()
+
+	args := flag.Args()
+	if len(args) < 1 {
+		fmt.Fprintf(os.Stderr, "usage: gawker [reports dir]\n")
+		os.Exit(1)
+	}
+
+	s, err := newServer(args)
+	if err != nil {
+		fmt.Errorf("Error creating server: ", err)
+		os.Exit(1)
+	}
+	log.Fatal(s.ListenAndServe())
 }

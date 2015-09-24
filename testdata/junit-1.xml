@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite tests="3" failures="1" time="12.50">
+      <testcase name="Test case 1" classname="apps" time="5.25"></testcase>
+      <testcase name="Test case 2" classname="apps" time="0.25">
+      <failure message="test failure">AssertionError 0 == 1</failure>
+      </testcase>
+      <testcase name="Test case 3" classname="apps" time="7.00"></testcase>
+  </testsuite>
