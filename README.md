@@ -13,3 +13,5 @@ Simple app that watches running tests progress
     gawker /path/to/junit-reports
 
 Then visit http://hostname:8080/
+
+![alt tag](https://raw.githubusercontent.com/markstgodard/gawker/master/screenshot.png)
