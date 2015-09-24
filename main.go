@@ -25,6 +25,7 @@ func newServer(args []string) (*http.Server, error) {
 	c, err := NewCollector(args[0])
 	if err != nil {
 		fmt.Errorf("Error creating test collector: %s\n", err)
+		return nil, err
 	}
 	log.Printf("Watching reports dir [%s]\n", c.ReportsDir)
 
