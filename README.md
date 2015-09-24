@@ -1,7 +1,7 @@
-# Gawk ๏_๏
+# Gawker ๏_๏
 
 ## About
-Simple app that watches test progress
+Simple app that watches running tests progress
 
 ## Install
 
